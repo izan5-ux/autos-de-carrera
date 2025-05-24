@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Juego de Carreras de Preguntas</title>
+<title>Juego de Carreras de Auto - Preguntas</title>
 <style>
   body {
     font-family: Arial, sans-serif;
     background: #222;
-    color: #fff;
+    color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -16,21 +16,33 @@
     height: 100vh;
     overflow: hidden;
   }
-  .track {
+  h1 {
+    margin: 10px 0;
+  }
+  #raceTrack {
     position: relative;
     width: 600px;
     height: 150px;
-    background: #555;
-    margin-top: 40px;
-    border-radius: 10px;
-    border: 3px solid #fff;
-    box-shadow: inset 0 0 10px #000;
+    border: 3px solid #555;
+    background: linear-gradient(to right, #444 10%, #777 10%, #777 90%, #444 90%);
+    margin-bottom: 20px;
   }
-  .finish-line {
+  #car {
     position: absolute;
-    right: 0;
+    top: 50%;
+    left: 0;
+    width: 60px;
+    height: 30px;
+    background: red;
+    clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+    transform: translateY(-50%);
+    transition: left 0.5s ease;
+  }
+  #finishLine {
+    position: absolute;
     top: 0;
-    width: 10px;
+    right: 30px;
+    width: 20px;
     height: 100%;
     background: repeating-linear-gradient(
       45deg,
@@ -39,235 +51,206 @@
       black 10px,
       black 20px
     );
-    border-left: 3px solid #fff;
-    box-shadow: 0 0 8px 2px white;
   }
-  .car {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 60px;
-    height: 30px;
-    background: linear-gradient(135deg, #e63946, #d62828);
-    border-radius: 12px 12px 6px 6px;
-    transform: translateY(-50%);
-    transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 10px #ff3c3c;
-  }
-  .car:before {
-    content: "";
-    position: absolute;
-    top: 5px;
-    left: 10px;
-    width: 40px;
-    height: 20px;
-    background: #fff;
-    border-radius: 6px;
-    box-shadow: inset 0 2px 5px #ccc;
-  }
-  .car.vibrate {
-    animation: vibrate 0.3s ease;
-  }
-  @keyframes vibrate {
-    0% { transform: translate(-1px, -50%) rotate(-2deg); }
-    25% { transform: translate(1px, -50%) rotate(2deg); }
-    50% { transform: translate(-1px, -50%) rotate(-2deg); }
-    75% { transform: translate(1px, -50%) rotate(2deg); }
-    100% { transform: translate(0, -50%) rotate(0); }
-  }
-  .question-box {
-    margin-top: 30px;
-    width: 600px;
+  #questionBox {
+    max-width: 600px;
     background: #333;
     padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px #111;
+    border-radius: 8px;
   }
-  .question-text {
-    font-size: 1.3em;
-    margin-bottom: 15px;
-    user-select: none;
+  #question {
+    font-size: 1.2em;
+    margin-bottom: 10px;
   }
-  .options {
-    display: flex;
-    gap: 20px;
-  }
-  .option {
-    flex: 1;
-    background: #444;
-    padding: 15px;
-    text-align: center;
-    border-radius: 10px;
+  .answerBtn {
+    background: #555;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px 0;
+    width: 100%;
+    color: white;
+    font-size: 1em;
+    border-radius: 5px;
     cursor: pointer;
-    user-select: none;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    font-weight: bold;
-    font-size: 1.1em;
-    box-shadow: 0 0 8px #222 inset;
+    transition: background-color 0.3s ease;
   }
-  .option:hover {
-    background-color: #555;
-    transform: scale(1.05);
+  .answerBtn:hover {
+    background-color: #666;
   }
-  .option.correct {
-    background-color: #28a745 !important;
-    box-shadow: 0 0 15px #28a745;
-    cursor: default;
+  .correct {
+    background-color: #4caf50 !important;
+    color: white;
   }
-  .option.incorrect {
-    background-color: #dc3545 !important;
-    box-shadow: 0 0 15px #dc3545;
-    cursor: default;
+  .incorrect {
+    background-color: #f44336 !important;
+    color: white;
   }
-  .message {
-    margin-top: 25px;
-    font-size: 1.7em;
-    font-weight: bold;
-    user-select: none;
+  #resultMessage {
+    margin-top: 15px;
+    font-size: 1.4em;
+  }
+  #resetBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    background: #2196f3;
+    border: none;
+    border-radius: 6px;
+    color: white;
   }
 </style>
 </head>
 <body>
-
-<h1>Juego de Carreras de Preguntas</h1>
-
-<div class="track" aria-label="Pista de carreras">
-  <div class="finish-line" aria-hidden="true"></div>
-  <div class="car" id="car" aria-label="Auto jugador"></div>
+<h1>Juego de Carreras: Preguntas y Respuestas</h1>
+<div id="raceTrack">
+  <div id="car"></div>
+  <div id="finishLine"></div>
 </div>
-
-<div class="question-box" role="region" aria-live="polite">
-  <div class="question-text" id="question">¿Pregunta aparecerá aquí?</div>
-  <div class="options">
-    <div class="option" id="option1" role="button" tabindex="0"></div>
-    <div class="option" id="option2" role="button" tabindex="0"></div>
-  </div>
+<div id="questionBox">
+  <div id="question"></div>
+  <div id="answers"></div>
+  <div id="resultMessage"></div>
+  <button id="resetBtn" style="display:none;">Jugar de nuevo</button>
 </div>
-
-<div class="message" id="message" role="alert" aria-live="assertive"></div>
-
-<!-- Sonidos embebidos como base64 -->
-<audio id="sound-correct" preload="auto" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAZGF0YQAAAAA="></audio>
-<audio id="sound-incorrect" preload="auto" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAZGF0YQAAAAA="></audio>
 
 <script>
-  // Preguntas ejemplo, puedes cambiar estas
   const questions = [
-    { q: "¿La Tierra es plana?", options: ["Sí", "No"], correct: 1 },
-    { q: "¿El agua hierve a 100°C?", options: ["Sí", "No"], correct: 0 },
-    { q: "¿2+2=5?", options: ["Sí", "No"], correct: 1 },
-    { q: "¿El sol es una estrella?", options: ["Sí", "No"], correct: 0 },
-    { q: "¿El color del cielo es verde?", options: ["Sí", "No"], correct: 1 },
+    {
+      q: "¿Cuál es el objetivo principal del proyecto presentado en el texto?",
+      a: "Lograr que un coche autónomo modelo complete una ruta sin salirse del carril y respetando las normas de tránsito."
+    },
+    {
+      q: "¿Qué empresas se mencionan en el texto como referentes del desarrollo de vehículos autónomos?",
+      a: "Tesla y Comma.ai."
+    },
+    {
+      q: "¿Cuál es la hipótesis planteada en el texto?",
+      a: "La hipótesis es que, aunque el sistema de Comma.ai aún no está tan avanzado, podría superar a Tesla en el futuro cercano."
+    },
+    {
+      q: "¿Qué tecnología utiliza el proyecto desarrollado por el autor en el Bosch Future Mobility Challenge?",
+      a: "Un coche modelo eléctrico con una mini computadora (como una Raspberry Pi) y una webcam simple montada encima."
+    },
+    {
+      q: "¿Qué desafíos enfrentó el coche autónomo del proyecto?",
+      a: "Limitaciones por su bajo poder de procesamiento y errores ocasionales en situaciones complejas, como la detección de señales de tránsito."
+    },
+    {
+      q: "¿Qué tipo de análisis se realiza sobre el texto original en inglés?",
+      a: "Análisis retórico y lingüístico que incluye la identificación de movimientos como introducción, contextualización, hipótesis, metodología, resultados y conclusión."
+    },
+    {
+      q: "¿Qué significa el término “LIDAR” según el glosario del documento?",
+      a: "Tecnología de teledetección que utiliza pulsos de luz (láser) para medir distancias y crear mapas tridimensionales."
+    },
+    {
+      q: "¿Qué problema legal y ético se menciona en la conclusión del resumen?",
+      a: "Existen desafíos legales y éticos, como la toma de decisiones en dilemas morales y la responsabilidad legal en caso de accidentes."
+    }
   ];
 
   const car = document.getElementById('car');
   const questionEl = document.getElementById('question');
-  const option1El = document.getElementById('option1');
-  const option2El = document.getElementById('option2');
-  const messageEl = document.getElementById('message');
-  const soundCorrect = document.getElementById('sound-correct');
-  const soundIncorrect = document.getElementById('sound-incorrect');
+  const answersEl = document.getElementById('answers');
+  const resultMessage = document.getElementById('resultMessage');
+  const resetBtn = document.getElementById('resetBtn');
+  const finishLineX = 530; // posición final (px)
+  let currentPosition = 0;
+  const moveStep = 70; // px que avanza o retrocede
+  let gameEnded = false;
 
-  const trackWidth = 600;
-  const carWidth = 60;
-  const finishLinePos = trackWidth - carWidth - 13; // Ajuste por bordes
-  const step = 100; // px a avanzar o retroceder
-
-  let position = 0;
-  let currentQuestionIndex = 0;
-
-  function loadQuestion() {
-    messageEl.textContent = "";
-    const question = questions[currentQuestionIndex];
-    questionEl.textContent = question.q;
-    option1El.textContent = question.options[0];
-    option2El.textContent = question.options[1];
-    option1El.className = "option";
-    option2El.className = "option";
-    option1El.style.pointerEvents = "auto";
-    option2El.style.pointerEvents = "auto";
-  }
-
-  function updateCarPosition() {
-    car.style.left = position + "px";
-    // Agregar vibración cuando se mueve
-    car.classList.add('vibrate');
-    setTimeout(() => {
-      car.classList.remove('vibrate');
-    }, 300);
-
-    if (position >= finishLinePos) {
-      messageEl.textContent = "¡Ganaste!";
-      option1El.style.pointerEvents = "none";
-      option2El.style.pointerEvents = "none";
+  function setPosition(pos) {
+    if (pos < 0) pos = 0;
+    if (pos > finishLineX) pos = finishLineX;
+    currentPosition = pos;
+    car.style.left = pos + "px";
+    if (pos >= finishLineX) {
+      gameEnded = true;
+      resultMessage.textContent = "¡Ganaste! 🚗🏁";
+      answersEl.innerHTML = "";
+      resetBtn.style.display = "inline-block";
     }
   }
 
-  function playSound(correct) {
-    if (correct) {
-      soundCorrect.currentTime = 0;
-      soundCorrect.play();
+  function getRandomQuestion() {
+    return questions[Math.floor(Math.random() * questions.length)];
+  }
+
+  function showQuestion() {
+    if (gameEnded) return;
+    resultMessage.textContent = "";
+    resetBtn.style.display = "none";
+    const qObj = getRandomQuestion();
+    questionEl.textContent = qObj.q;
+
+    // Crear opciones: 1 correcta + 3 incorrectas
+    let wrongAnswers = questions.filter(q => q.a !== qObj.a).map(q => q.a);
+    shuffleArray(wrongAnswers);
+    wrongAnswers = wrongAnswers.slice(0, 3);
+
+    let options = wrongAnswers.concat(qObj.a);
+    shuffleArray(options);
+
+    answersEl.innerHTML = "";
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.textContent = opt;
+      btn.className = "answerBtn";
+      btn.onclick = () => checkAnswer(btn, qObj.a);
+      answersEl.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(button, correctAnswer) {
+    if (gameEnded) return;
+    disableButtons();
+    if (button.textContent === correctAnswer) {
+      button.classList.add('correct');
+      setPosition(currentPosition + moveStep);
+      resultMessage.textContent = "¡Correcto! Avanzás en la pista.";
     } else {
-      soundIncorrect.currentTime = 0;
-      soundIncorrect.play();
+      button.classList.add('incorrect');
+      setPosition(currentPosition - moveStep);
+      resultMessage.textContent = "Incorrecto. Retrocedes en la pista.";
+      highlightCorrectAnswer(correctAnswer);
     }
-  }
-
-  function answer(selected) {
-    const question = questions[currentQuestionIndex];
-    option1El.style.pointerEvents = "none";
-    option2El.style.pointerEvents = "none";
-
-    if (selected === question.correct) {
-      // Correcto
-      if (selected === 0) option1El.classList.add('correct');
-      else option2El.classList.add('correct');
-
-      position += step;
-      if (position > finishLinePos) position = finishLinePos;
-
-      playSound(true);
-    } else {
-      // Incorrecto
-      if (selected === 0) option1El.classList.add('incorrect');
-      else option2El.classList.add('incorrect');
-
-      // Mostrar la correcta
-      if (question.correct === 0) option1El.classList.add('correct');
-      else option2El.classList.add('correct');
-
-      position -= step;
-      if (position < 0) position = 0;
-
-      playSound(false);
-    }
-
-    updateCarPosition();
-
     setTimeout(() => {
-      if (position < finishLinePos) {
-        currentQuestionIndex = Math.floor(Math.random() * questions.length);
-        loadQuestion();
-      }
+      if (!gameEnded) showQuestion();
     }, 1500);
   }
 
-  option1El.addEventListener('click', () => answer(0));
-  option2El.addEventListener('click', () => answer(1));
-
-  // Para accesibilidad: responder con teclado Enter o Espacio
-  [option1El, option2El].forEach((el, i) => {
-    el.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        answer(i);
+  function highlightCorrectAnswer(correctAnswer) {
+    const buttons = document.querySelectorAll('.answerBtn');
+    buttons.forEach(btn => {
+      if (btn.textContent === correctAnswer) {
+        btn.classList.add('correct');
       }
     });
-  });
+  }
 
-  loadQuestion();
-  updateCarPosition();
+  function disableButtons() {
+    const buttons = document.querySelectorAll('.answerBtn');
+    buttons.forEach(btn => btn.disabled = true);
+  }
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  resetBtn.onclick = () => {
+    gameEnded = false;
+    setPosition(0);
+    showQuestion();
+    resultMessage.textContent = "";
+  };
+
+  // Inicio del juego
+  setPosition(0);
+  showQuestion();
 </script>
-
 </body>
 </html>
